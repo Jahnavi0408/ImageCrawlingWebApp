@@ -10,6 +10,8 @@ WORKDIR /app
 COPY . .
 
 # Build the WAR
+
+RUN apt-get update && apt-get install -y maven
 RUN mvn clean package
 
 # Run Jetty (or just run the WAR using Java)
