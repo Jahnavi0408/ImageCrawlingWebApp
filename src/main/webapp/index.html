@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Image Crawler</title>
+    <style>
+        body { font-family: Arial; margin: 40px; }
+        input { padding: 8px; width: 300px; }
+        button { padding: 8px 12px; }
+        .image-grid { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px; }
+        .image-grid img { max-height: 150px; border: 1px solid #ccc; padding: 4px; }
+    </style>
+</head>
+<body>
+
+<h2>🕷️ Image Crawler</h2>
+<p>Enter a website URL to crawl all images:</p>
+
+<input type="text" id="urlInput" placeholder="https://example.com" />
+<button onclick="startCrawl()">Start Crawl</button>
+
+<div id="loading" style="display:none;">🔄 Crawling...</div>
+<div class="image-grid" id="imageGrid"></div>
+
+<script>
+    function startCrawl() {
+        const url = document.getElementById("urlInput").value;
+        const loading = document.getElementById("loading");
+        const grid = document.getElementById("imageGrid");
+        grid.innerHTML = '';
+        loading.style.display = 'block';
+
+        fetch("crawl", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: "url=" + encodeURIComponent(url)
+        })
+        .then(res => res.json())
+        .then(images => {
+            loading.style.display = 'none';
+            if (images.length === 0) {
+                grid.innerHTML = "<p>No images found.</p>";
+                return;
+            }
+            images.forEach(src => {
+                const img = document.createElement("img");
+                img.src = src;
+                grid.appendChild(img);
+            });
+        })
+        .catch(err => {
+            loading.style.display = 'none';
+            grid.innerHTML = "<p style='color:red;'>Error: " + err + "</p>";
+        });
+    }
+</script>
+
+</body>
+</html>
